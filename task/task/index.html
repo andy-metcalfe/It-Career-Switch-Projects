@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="libs/css/styles.css">
+    <title>Task</title>
+  </head>
+  <body>
+
+<table cellspacing="0">
+  <tr>
+    <td>Api name</td>
+    <td class="second-column">Api Description</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Ocean</td>
+    <td>Returns the ocean or sea for the given <label for="latitude">latitude:</label> <input id="latitude" type="range" value="0" min="-90" max="90" oninput="this.nextElementSibling.value = this.value"><output>0</output>
+      and <label for="longitude">longitude:</label> <input id="longitude" type="range" value="0" min="-180" max="180" oninput="this.nextElementSibling.value = this.value"><output>0</output> </td>
+    <td><button id="oceanBtn">Submit</button></td>
+  </tr>
+  <tr>
+    <td>Time Zone</td>
+    <td>Provides information on time zone for a given <label for="latitudeTimeZone">latitude:</label> <input id="latitudeTimeZone" type="range" value="0" min="-89" max="89" oninput="this.nextElementSibling.value = this.value"><output>0</output>
+      and <label for="longitudeTimeZone">longitude:</label> <input id="longitudeTimeZone" type="range" value="0" min="-179" max="179" oninput="this.nextElementSibling.value = this.value"><output>0</output></td>
+    <td><button id="timeZoneBtn">Submit</button></td>
+  </tr>
+  <tr>
+    <td>Weather</td>
+    <td>Displays the most recent weather conditions to the chosen co-ordinates. <br>
+             <label for="north">North:</label> <input id="north" type="range" value="0" min="-200" max="200" oninput="this.nextElementSibling.value = this.value"><output>0</output> <br>
+             <label for="south">South:</label> <input id="south" type="range" value="0" min="-200" max="200" oninput="this.nextElementSibling.value = this.value"><output>0</output> <br>
+             <label for="east">East:</label> <input id="east" type="range" value="0" min="-200" max="200" oninput="this.nextElementSibling.value = this.value"><output>0</output> <br>
+             <label for="west">West:</label> <input id="west" type="range" value="0" min="-200" max="200" oninput="this.nextElementSibling.value = this.value"><output>0</output> <br>
+    </td>
+    <td><button id="weatherBtn">Submit</button></td>
+  </tr>
+  <tr>
+    <td id="bottom-box" colspan="3"><p id="result">Result</p>
+      <div class="list">
+        <div id="list1"></div>
+        <div id="list2"></div>
+        <div id="list3"></div>
+        <div id="list4"></div>
+        <div id="list5"></div>
+        <div id="list6"></div>
+        <div id="list7"></div>
+      </div>
+    </td>
+  </tr>
+</table>
+
+  <script type="application/javascript" src="libs/js/script.js"></script>
+  <script type="application/javascript" src="libs/js/jquery-2.2.3.min.js"></script>
+
+  </body>
+</html>
