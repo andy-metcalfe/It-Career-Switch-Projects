@@ -1,0 +1,499 @@
+/*---------------------------------------------------------General------------------------------------------*/
+body {
+    padding: 0;
+    margin: 0;
+}
+html, body, #map {
+    height: 96.5%;
+    width: 100vw;
+    z-index: 0;
+    border-radius: 0%;
+}
+.modal {
+  z-index: 9998;
+}
+p {
+  margin-bottom: 0px;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+div {
+  color: #0f1418;
+}
+.title {
+  font-weight: bold;
+}
+.big-text{
+  font-size: 35px;
+  font-weight: bold;
+}
+.sub-title {
+  font-size: 12px;
+  margin-bottom: 0px;
+  font-weight: 700;
+}
+.div-boxes {
+  background-color: #ededed;
+  border: 1px solid #dedede;
+  word-wrap: break-word;
+  margin: 5px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+}
+/*---------------------------------------------------------Top Banner------------------------------------------*/
+#nav-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  background-color: #ededed;
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.nav-button {
+  text-align: right;
+  padding: 0px 10px 0px 10px;
+  border-radius: 3px;
+  margin-right: 20px;
+  margin-top: 7.5px;
+  font-weight: bolder;
+}
+#right {
+    float: right;
+  }
+.nav-item {
+  display: inline;
+}
+#information {
+  display: inline;
+  font-size: 30px;
+  padding-top: 10px;
+  padding-bottom: 13px;
+  font-weight: 500;
+}
+#country-select-container > div{
+  text-align: center;
+}
+#country-select-container{
+  background-color: #ededed;
+  padding-bottom: 10px;
+}
+/*---------------------------------------------------------Loader box------------------------------------------*/
+#loader-box {
+  position: absolute;
+  background-color: #ffffff;
+  width: 96%;
+  height: 96%;
+  left: 10px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+}
+#loader-container {
+  text-align: center;
+}
+.modal-container {
+  position: relative;
+}
+/*---------------------------------------------------------Header------------------------------------------*/
+#country-name {
+  font-size: 25px;
+  font-weight: bold;
+}
+#close-pop-up-btn {
+  background-color: white;
+}
+/*---------------------------------------------------------Summary------------------------------------------*/
+#summary-container {
+  height: 130px;
+  width: 55%;
+  font-size: 15px;
+}
+.sub-title {
+  font-weight: 500;
+}
+/*---------------------------------------------------------Flag------------------------------------------*/
+#flag-container {
+  height: 130px;
+  width: 40.2%;
+}
+#flag-image {
+  max-height: 110px;
+  max-width: 160px;
+}
+/*---------------------------------------------------------Date------------------------------------------*/
+#date-container {
+  height: 90px;
+  width: 47.6%;
+}
+#date-text {
+  font-size: 30px;
+  font-weight: bold;
+}
+/*---------------------------------------------------------Time/Clock------------------------------------------*/
+#clock-container {
+  font-size: 30px;
+  font-weight: bold;
+}
+#time-container {
+  height: 90px;
+  width: 47.6%;
+}
+.sun-rise-sun-set-class{
+  font-size: 13px;
+  margin-right: 10px;
+}
+#sun-rise-text {
+  font-weight: 650;
+}
+#sun-set-text {
+  font-weight: 650;
+}
+/*---------------------------------------------------------Currency Exchange------------------------------------------*/
+#currency-container {
+  height: 210px;
+  width: 97%;
+}
+#currency-container > h6 {
+  margin-bottom: 5px;
+}
+#label-container {
+  margin-bottom: 5px;
+}
+#from-to-container {
+  margin-bottom: 5px;
+}
+#button-container{
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+.margin5 {
+  margin-bottom: 5px;
+}
+#converted-currency-text{
+  font-size: 20px;
+}
+#final-value {
+  margin-left: 5px;
+  font-size: 20px;
+  color: green;
+}
+/*---------------------------------------------------------Temp------------------------------------------*/
+#temperature-container {
+  height: 125px;
+  width: 26.35%;
+}
+/*---------------------------------------------------------Weather Icon------------------------------------------*/
+#weather-icon-container {
+  height: 125px;
+  width: 26.35%;
+}
+#weather-icon-backgroud {
+  background-color: #adafb0;
+  border-radius: 5px;
+}
+#weather-icon-image {
+  height: 90px;
+  width: auto;
+}
+#weather-icon-text {
+  margin-bottom: 5px;
+}
+/*---------------------------------------------------------Weather Summary------------------------------------------*/
+#weather-summary-container {
+  height: 125px;
+  width: 40%;
+  font-size: 15px;
+}
+/*---------------------------------------------------------News------------------------------------------*/
+#news-container {
+  height: 160px;
+  width: 97%;
+}
+.headlines {
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+/*---------------------------------------------------------Wikipedia------------------------------------------*/
+#wikipedia-link-container {
+  height: 160px;
+  width: 55.2%;
+  font-size: 13px;
+}
+#wikipedia-link-container > a {
+  font-size: 15px;
+}
+#wikipedia-img-container {
+  height: 160px;
+  width: 40%;
+}
+#wikipedia-image {
+  max-height: 110px;
+  max-width: auto;
+}
+/*---------------------------------------------------------media------------------------------------------*/
+
+@media only screen and (max-width: 500px) {
+  #nav-list {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  #information {
+    font-size: 17px;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 7.5px;
+  }
+  .modal-body {
+   padding: 5px;
+  }
+  .modal-header {
+   padding: 5px 10px;
+  }
+  #summary-container {
+   width: 54%;
+   height: 100px;
+   font-size: 12px;
+  }
+  #flag-container {
+   height: 100px;
+  }
+  #flag-image {
+    max-height: 80px;
+  }
+  #news-container {
+    overflow: scroll;
+  }
+  .headlines {
+    font-size: 12px;
+    margin-bottom: 3px;
+  }
+  .weather-titles {
+    font-size: 9px;
+  }
+  #date-container {
+    height: 80px;
+    width: 47%;
+  }
+  #date-text {
+    font-size: 20px;
+  }
+  #clock-container {
+    font-size: 20px;
+  }
+  #time-container {
+    height: 80px;
+    width: 47%;
+  }
+  .sun-rise-sun-set-class{
+    font-size: 10px;
+    margin-right: 3px;
+  }
+  #convert-amount-text {
+    font-size: 15px;
+  }
+  #amount-to-convert-text {
+    font-size: 13px;
+  }
+  #countrys-currency-text {
+    font-size: 13px;
+  }
+  #oamount {
+    width: 90px;
+    font-size: 13px;
+  }
+  #sel1 {
+    width: 160px;
+    font-size: 13px;
+  }
+  #sel2 {
+    width: 160px;
+    font-size: 13px;
+  }
+  #countrys-currency-text {
+    font-size: 13px;
+  }
+  #final-value {
+    font-size: 15px;
+    margin-left: 3px;
+  }
+  #currency-container {
+    height: 175px;
+  }
+  #temperature-container {
+    height: 90px;
+    width: 25.5%;
+  }
+  #weather-icon-container {
+    height: 90px;
+    width: 25.5%;
+  }
+  #weather-summary-container {
+    height: 90px;
+    width: 40%;
+    font-size: 10px;
+  }
+  #weather-icon-backgroud {
+    background-color: #adafb0;
+    border-radius: 5px;
+  }
+  #weather-icon-image {
+    height: 60px;
+  }
+  #temp-text {
+    font-size: 23px;
+  }
+  #wikipedia-img-container {
+    height: 120px;
+    width: 35%;
+  }
+  #wikipedia-link-container {
+    height: 120px;
+    width: 59%;
+    font-size: 10px;
+    overflow: scroll;
+  }
+  #wikipedia-image {
+    max-height: 80px;
+  }
+  #wikipedia-link-container > a {
+    font-size: 13px;
+  }
+  .nav-button {
+    padding: 0px 5px 0px 5px;
+    margin-top: 5px;
+    border-radius: 3px;
+    font-size: 10px;
+    margin-right: 5px;
+  }
+/*------------------------------------------------------------------------------------------------*/
+  @media only screen and (max-width: 360px) {
+    #information {
+      font-size: 15px;
+      text-align: center;
+      padding-top: 5px;
+      padding-bottom: 7.5px;
+    }
+    #summary-container {
+     width: 55%;
+     height: 80px;
+     font-size: 10px;
+    }
+    #flag-container {
+     height: 80px;
+     width: 37%;
+    }
+    #flag-image {
+      max-height: 70px;
+    }
+    #date-container {
+      height: 60px;
+      width: 46%;
+    }
+    #date-text {
+      font-size: 15px;
+    }
+    #clock-container {
+      font-size: 15px;
+      margin-bottom: 0px;
+    }
+    #time-container {
+      height: 60px;
+      width: 46%;
+    }
+    .sub-title {
+      font-size: 10px;
+    }
+    .sun-rise-sun-set-class{
+      font-size: 7px;
+    }
+    #convert-amount-text {
+      font-size: 12px;
+    }
+    #final-value {
+      font-size: 12px;
+      margin-left: 1px;
+    }
+    #amount-to-convert-text {
+      font-size: 10px;
+    }
+    #countrys-currency-text {
+      font-size: 10px;
+    }
+    #oamount {
+      width: 90px;
+      font-size: 10px;
+    }
+    #sel1 {
+      width: 120px;
+      font-size: 10px;
+    }
+    #sel2 {
+      width: 120px;
+      font-size: 10px;
+    }
+    .buttons {
+      font-size: 10px;
+    }
+    .div-boxes {
+      padding: 5px;
+    }
+    #countrys-currency-text {
+      font-size: 10px;
+    }
+    #final-value {
+      font-size: 15px;
+    }
+    #currency-container {
+      height: 175px;
+    }
+    #temperature-container {
+      height: 70px;
+      width: 24%;
+    }
+    #weather-icon-container {
+      height: 70px;
+      width: 24%;
+    }
+    #weather-summary-container {
+      height: 70px;
+      width: 40%;
+      font-size: 8px;
+    }
+    #weather-icon-backgroud {
+      background-color: #adafb0;
+      border-radius: 5px;
+    }
+    #weather-icon-image {
+      height: 50px;
+    }
+    #temp-text {
+      font-size: 18px;
+    }
+    #wikipedia-img-container {
+      height: 100px;
+      width: 35%;
+    }
+    #wikipedia-link-container {
+      height: 100px;
+      width: 55%;
+      font-size: 10px;
+    }
+    #wikipedia-image {
+      height: 50px;
+    }
+    #wikipedia-link-container > a {
+      font-size: 10px;
+    }
+    #country-name {
+      font-size: 20px;
+    }
+}
