@@ -31,7 +31,6 @@ let newsHeadline1 = document.getElementById("news-headline1");
 let newsHeadline2 = document.getElementById("news-headline2");
 let newsHeadline3 = document.getElementById("news-headline3");
 
-
 var travelDestination = L.ExtraMarkers.icon({
   icon: 'fas fa-map-pin',
   markerColor: 'blue',
@@ -45,9 +44,6 @@ var countryClick = L.ExtraMarkers.icon({
   shape: 'square',
   prefix: 'fa'
 });
-
-
-
 
 
 //------------------------------------------------------------------------------select input drop down
@@ -86,6 +82,7 @@ function runFunction(e){
       			let countryCode = result.openCage.country_code;
       			let countryName = result.openCage.country;
       			let iso3CountryCode = result.openCage['ISO_3166-1_alpha-3'];
+            let ios2Code = result['openCage']['ISO_3166-1_alpha-2'];
 
             //prevents user clicking ocean
       			if(result.openCage._category == 'natural/water'){
@@ -109,43 +106,109 @@ function runFunction(e){
                     // WORKS ADD MARKER TO PLACE YOU CLIKED/SELECTED
       							L.marker(d,{icon: countryClick}).addTo(map).bindPopup(result['openCage']['country']).openPopup(); // marker on map?
 
-                    let ios2Code = result['openCage']['ISO_3166-1_alpha-2'];
+                    //change other data
+                    updateHeader();
+                    updateContinent();
+                    updateDate();
+                    updateTime();
+                    updateSunrise();
+                    updateSunset();
+                    updateTemp();
+                    updateWeatherIcon();
+                    updateWind();
+                    updateSkyConditions();
+                    updateHumidity();
+                    updateSelectBox();
+                    darkModeToggle();
 
-//-----------------------------------------------------------------------------------api call points of
-                  $.ajax({
-                      url: "libs/php/pointsofintertest.php",
-                      type: 'GET',
-                      dataType: 'json',
-                      data: {
-                        ios2Code: ios2Code
-                      },
-                      success: function(result) {
-                        //console.dir(result);
+                    function updateHeader(){
+                      let countryCountry = result['openCage']['country'];
+                      header.innerHTML = countryCountry;
+                    }
 
-                          var myStringArray = result['pointsOfInterest']['results'];
-                          var markers = L.markerClusterGroup();
+                    function updateContinent(){
+                      let continentName = result['openCage']['continent'];
+                      continentTitle.innerHTML = continentName;
+                    }
 
-                            for (var i = 0; i < myStringArray.length; i++) {
+                    function updateDate(){
+                      let getDate = result['timeZone']['time'];
+                      let sliceDate = getDate.slice(0,10);
+                      let year = getDate.slice(0,4);
+                      let day = getDate.slice(5,7);
+                      let month = getDate.slice(8,10);
+                      dateText.innerHTML = month + '-' + day + '-' + year;
+                    }
 
-                              let poiLat = myStringArray[i]['coordinates']['latitude'];
-                              let poiLng = myStringArray[i]['coordinates']['longitude'];
-                              let poiName = myStringArray[i]['name'];
+                    function updateTime(){
+                      let getTime = result['timeZone']['time'];
+                      let sliceTime = getTime.slice(11,16);
+                      clockText.innerHTML = sliceTime;
+                    }
 
-                              var title = poiName;
-                              var marker = L.marker(new L.LatLng(poiLat, poiLng), {icon:travelDestination}, {
-                                title: title
-                              });
-                              marker.bindPopup(title);
-                              markers.addLayer(marker);
-                            }
-
-                            map.addLayer(markers);
-
-                      },
-                      error: function(jqXHR, textStatus, errorThrown) {
-                        console.log(errorThrown);
+                    function updateSunrise(){
+                      if(result['timeZone']['sunrise']){
+                        let getSunRiseTime = result['timeZone']['sunrise'];
+                        let newGetSunRiseTime = getSunRiseTime.slice(11,16);
+                        sunRiseText.innerHTML = newGetSunRiseTime;
                       }
-                    });
+                    }
+
+                    function updateSunset(){
+                      if(result['timeZone']['sunset']){
+                        let getSunSetTime = result['timeZone']['sunset'];
+                        let newGetSunSetTime = getSunSetTime.slice(11,16);
+                        sunSetText.innerHTML = newGetSunSetTime;
+                      }
+                    }
+
+                    function updateTemp(){
+                      let kelvinTemp = result['openWeather']['main']['temp'];
+                      let finalTemp = Math.round(kelvinTemp - 273.15);
+                      tempText.innerHTML = finalTemp + '&#8451;';
+                    }
+
+                    function updateWeatherIcon(){
+                      var iconCode = result.openWeather.weather[0].icon;
+                      var iconUrl = "http://openweathermap.org/img/w/" + iconCode + ".png";
+                      document.getElementById("weather-icon-image").src= iconUrl;
+                    }
+
+                    function updateWind(){
+                      let countryWind = result['openWeather']['wind']['speed'];
+                      let finalWind = Math.round(countryWind * 2.237);
+                      windText.innerHTML = finalWind + 'mph';
+                    }
+
+                    function updateSkyConditions(){
+                      let countrySky = result['openWeather']['weather'][0]['main'];
+                      skyText.innerHTML = countrySky;
+                    }
+
+                    function updateHumidity(){
+                      let countryHumidity = result['openWeather']['main']['humidity'];
+                      humidityText.innerHTML = countryHumidity + '%';
+                    }
+
+                    function updateSelectBox(){
+                      document.getElementById("placeholder1").innerHTML = 'countryName';
+                    }
+
+
+                    function darkModeToggle(){
+                      let realTime = result['openWeather']['dt'];
+                      let sunriseTime = result['openWeather']['sys']['sunrise'];
+                      let sunsetTime = result['openWeather']['sys']['sunset'];
+
+                      if(realTime > sunriseTime && realTime < sunsetTime){
+                        lightMode();
+                        document.getElementById('loader-box').style.backgroundColor = lightBC;
+                      } else {
+                        darkMode();
+                        document.getElementById('loader-box').style.backgroundColor = darkBC;
+                      }
+                    }
+
 
       					$.ajax({
       							url: "libs/php/countryBorder.php",
@@ -178,14 +241,15 @@ function runFunction(e){
       						}
       					});
 
-      					$.ajax({
+                $.ajax({
       						url: "libs/php/project1v2.php",
       						type: 'GET',
       						dataType: 'json',
       						data: {
       							countryCode: countryCode,
       							countryName: countryName,
-                    is03: iso3CountryCode
+                    is03: iso3CountryCode,
+                    ios2Code: ios2Code
       						},
       						beforeSend: function(){
       						// Show loader before page renders
@@ -193,6 +257,26 @@ function runFunction(e){
       					 },
       						success: function(result) {
       							//console.dir(result);
+
+                    var myStringArray = result['pointsOfInterest']['results'];
+                    var markers = L.markerClusterGroup();
+
+                      for (var i = 0; i < myStringArray.length; i++) {
+
+                        let poiLat = myStringArray[i]['coordinates']['latitude'];
+                        let poiLng = myStringArray[i]['coordinates']['longitude'];
+                        let poiName = myStringArray[i]['name'];
+
+                        var title = poiName;
+                        var marker = L.marker(new L.LatLng(poiLat, poiLng), {icon: travelDestination}, {
+                          title: title
+                        });
+                        marker.bindPopup(title);
+                        markers.addLayer(marker);
+                      }
+
+                      map.addLayer(markers);
+
 
                     //change all data
                     updateCapital();
@@ -246,7 +330,6 @@ function runFunction(e){
                     }
 
                     function updateNews(){
-
                         if(result['news']['results'][0]){
                           let news1 = result['news']['results'][0]['title'];
                           let news1HREF = result['news']['results'][0]['link'];
@@ -278,10 +361,35 @@ function runFunction(e){
                         }
                       }
 
+                      function updateLinks(){
+                        let link1Final = result['wikipedia']['geonames'][0]['wikipediaUrl'];
+                        link1Text.innerHTML = 'Wikipedia Link 1';
+                        link1Text.href = 'https://' + link1Final;
+
+                        let link2Final = result['wikipedia']['geonames'][1]['wikipediaUrl'];
+                        link2Text.innerHTML = 'Wikipedia Link 2';
+                        link2Text.href = 'https://' + link2Final;
+
+                        let link3Final = result['wikipedia']['geonames'][2]['wikipediaUrl'];
+                        link3Text.innerHTML = 'Wikipedia Link 3';
+                        link3Text.href = 'https://' + link3Final;
+
+                        let link4Final = result['wikipedia']['geonames'][3]['wikipediaUrl'];
+                        link4Text.innerHTML = 'Wikipedia Link 4';
+                        link4Text.href = 'https://' + link4Final;
+
+                        let link5Final = result['wikipedia']['geonames'][4]['wikipediaUrl'];
+                        link5Text.innerHTML = 'Wikipedia Link 5';
+                        link5Text.href = 'https://' + link5Final;
+                      }
+
+                      function updateWikiImage(){
+                        let wikiImage = result['wikipedia']['geonames'][0]['thumbnailImg'];
+                        document.getElementById("wikipedia-image").src= wikiImage;
+                      }
+
+
                     let currencyCode = result['restCountries']['currencies'][0]['code'];
-
-
-
       //----------------------------------------------------------api call for getting currency
                         $.ajax({
                 						url: "libs/php/currency.php",
@@ -327,160 +435,27 @@ function runFunction(e){
                 							console.log(errorThrown);
                 						}
                 					});
-
-                    function updateLinks(){
-                      let link1Final = result['wikipedia']['geonames'][0]['wikipediaUrl'];
-                      link1Text.innerHTML = 'Wikipedia Link 1';
-                      link1Text.href = 'https://' + link1Final;
-
-                      let link2Final = result['wikipedia']['geonames'][1]['wikipediaUrl'];
-                      link2Text.innerHTML = 'Wikipedia Link 2';
-                      link2Text.href = 'https://' + link2Final;
-
-                      let link3Final = result['wikipedia']['geonames'][2]['wikipediaUrl'];
-                      link3Text.innerHTML = 'Wikipedia Link 3';
-                      link3Text.href = 'https://' + link3Final;
-
-                      let link4Final = result['wikipedia']['geonames'][3]['wikipediaUrl'];
-                      link4Text.innerHTML = 'Wikipedia Link 4';
-                      link4Text.href = 'https://' + link4Final;
-
-                      let link5Final = result['wikipedia']['geonames'][4]['wikipediaUrl'];
-                      link5Text.innerHTML = 'Wikipedia Link 5';
-                      link5Text.href = 'https://' + link5Final;
-                    }
-
-                    function updateWikiImage(){
-                      let wikiImage = result['wikipedia']['geonames'][0]['thumbnailImg'];
-                      document.getElementById("wikipedia-image").src= wikiImage;
-                    }
-
+      //---------------------------------------------------------------------------------------------------------api currency end
       						},
       						error: function(jqXHR, textStatus, errorThrown) {
       							console.log(errorThrown);
       						},
       						complete:function(data){
       				       $("#loader-box").hide();
-      				},
+      				      }
       					});
-
-                //change other data
-                updateHeader();
-                updateContinent();
-                updateDate();
-                updateTime();
-                updateSunrise();
-                updateSunset();
-                updateTemp();
-                updateWeatherIcon();
-                updateWind();
-                updateSkyConditions();
-                updateHumidity();
-                updateSelectBox();
-                darkModeToggle();
-
-      					function updateHeader(){
-                  let countryCountry = result['openCage']['country'];
-        					header.innerHTML = countryCountry;
-                }
-
-                function updateContinent(){
-                  let continentName = result['openCage']['continent'];
-        		      continentTitle.innerHTML = continentName;
-                }
-
-                function updateDate(){
-        		      let getDate = result['timeZone']['time'];
-        		      let sliceDate = getDate.slice(0,10);
-        					let year = getDate.slice(0,4);
-        					let day = getDate.slice(5,7);
-        					let month = getDate.slice(8,10);
-        		      dateText.innerHTML = month + '-' + day + '-' + year;
-                }
-
-                function updateTime(){
-                  let getTime = result['timeZone']['time'];
-        		      let sliceTime = getTime.slice(11,16);
-        		      clockText.innerHTML = sliceTime;
-                }
-
-                function updateSunrise(){
-                  if(result['timeZone']['sunrise']){
-        						let getSunRiseTime = result['timeZone']['sunrise'];
-        						let newGetSunRiseTime = getSunRiseTime.slice(11,16);
-        						sunRiseText.innerHTML = newGetSunRiseTime;
-        					}
-                }
-
-                function updateSunset(){
-                  if(result['timeZone']['sunset']){
-        			      let getSunSetTime = result['timeZone']['sunset'];
-        			      let newGetSunSetTime = getSunSetTime.slice(11,16);
-        			      sunSetText.innerHTML = newGetSunSetTime;
-        					}
-                }
-
-                function updateTemp(){
-                  let kelvinTemp = result['openWeather']['main']['temp'];
-        		      let finalTemp = Math.round(kelvinTemp - 273.15);
-        		      tempText.innerHTML = finalTemp + '&#8451;';
-                }
-
-                function updateWeatherIcon(){
-                  var iconCode = result.openWeather.weather[0].icon;
-        		      var iconUrl = "http://openweathermap.org/img/w/" + iconCode + ".png";
-        		      document.getElementById("weather-icon-image").src= iconUrl;
-                }
-
-      		      function updateWind(){
-                  let countryWind = result['openWeather']['wind']['speed'];
-        		      let finalWind = Math.round(countryWind * 2.237);
-        		      windText.innerHTML = finalWind + 'mph';
-                }
-
-      		      function updateSkyConditions(){
-                  let countrySky = result['openWeather']['weather'][0]['main'];
-        		      skyText.innerHTML = countrySky;
-                }
-
-                function updateHumidity(){
-                  let countryHumidity = result['openWeather']['main']['humidity'];
-        		      humidityText.innerHTML = countryHumidity + '%';
-                }
-
-                function updateSelectBox(){
-                  document.getElementById("placeholder1").innerHTML = countryName;
-                }
-
-
-                function darkModeToggle(){
-                  let realTime = result['openWeather']['dt'];
-      						let sunriseTime = result['openWeather']['sys']['sunrise'];
-      						let sunsetTime = result['openWeather']['sys']['sunset'];
-
-      						if(realTime > sunriseTime && realTime < sunsetTime){
-      							lightMode();
-      							document.getElementById('loader-box').style.backgroundColor = lightBC;
-      						} else {
-      							darkMode();
-      							document.getElementById('loader-box').style.backgroundColor = darkBC;
-      		 				}
-                }
-
       			} //if else end
       		},
       		error: function(jqXHR, textStatus, errorThrown) {
       			console.log(errorThrown);
       		}
       	});
-
   },
       error: function(jqXHR, textStatus, errorThrown) {
       console.log(errorThrown);
     }
   });
 }
-
 
 
 //welcome message with ? btn
@@ -535,403 +510,381 @@ function getInfo(e){
 		  lon -= 360;
 		}
 
-  $.ajax({
-		url: "libs/php/project1.php",
-		type: 'GET',
-		dataType: 'json',
-		data: {
-			lat: e.latlng.lat,
-			lng: lon,
-		},
-		success: function(result) {
-			//console.dir(result);
-			let countryCode = result.openCage.country_code;
-			let countryName = result.openCage.country;
-			let iso3CountryCode = result.openCage['ISO_3166-1_alpha-3'];
+        $.ajax({
+      		url: "libs/php/project1.php",
+      		type: 'GET',
+      		dataType: 'json',
+      		data: {
+      			lat: e.latlng.lat,
+      			lng: lon,
+      		},
+      		success: function(result) {
+      			//console.dir(result);
+      			let countryCode = result.openCage.country_code;
+      			let countryName = result.openCage.country;
+      			let iso3CountryCode = result.openCage['ISO_3166-1_alpha-3'];
+            let ios2Code = result['openCage']['ISO_3166-1_alpha-2'];
 
-      //prevents user clicking ocean
-			if(result.openCage._category == 'natural/water'){
-				alert("Country Not Selected: Please select a country");
-			} else if(result.openCage.country) {
+            //prevents user clicking ocean
+      			if(result.openCage._category == 'natural/water'){
+      				alert("Country Not Selected: Please select a country");
+      			} else if(result.openCage.country) {
 
-              //modal pop-up
-						  $("#pop-up-tab").modal('show');
+                    //modal pop-up
+      						  $("#pop-up-tab").modal('show');
 
-              //go to click and zoom
-							map.flyTo([e.latlng.lat,e.latlng.lng ], 5, {
-											animate: true,
-											duration: 1
-							});
+                    //go to click and zoom
+      							map.flyTo([e.latlng.lat,e.latlng.lng ], 5, {
+      											animate: true,
+      											duration: 1
+      							});
 
+                    var theMarker = L.marker(e.latlng, {icon: countryClick});
+                    theMarker.addTo(map).bindPopup(result['openCage']['country']).openPopup();
 
-              var theMarker = L.marker(e.latlng, {icon: countryClick});
-              theMarker.addTo(map).bindPopup(result['openCage']['country']).openPopup();
+                    //change other data
+                    updateHeader();
+                    updateContinent();
+                    updateDate();
+                    updateTime();
+                    updateSunrise();
+                    updateSunset();
+                    updateTemp();
+                    updateWeatherIcon();
+                    updateWind();
+                    updateSkyConditions();
+                    updateHumidity();
+                    updateSelectBox();
+                    darkModeToggle();
 
-              let ios2Code = result['openCage']['ISO_3166-1_alpha-2'];
+          					function updateHeader(){
+                      let countryCountry = result['openCage']['country'];
+            					header.innerHTML = countryCountry;
+                    }
 
-              $.ajax({
-                  url: "libs/php/pointsofintertest.php",
-                  type: 'GET',
-                  dataType: 'json',
-                  data: {
+                    function updateContinent(){
+                      let continentName = result['openCage']['continent'];
+            		      continentTitle.innerHTML = continentName;
+                    }
+
+                    function updateDate(){
+            		      let getDate = result['timeZone']['time'];
+            		      let sliceDate = getDate.slice(0,10);
+            					let year = getDate.slice(0,4);
+            					let day = getDate.slice(5,7);
+            					let month = getDate.slice(8,10);
+            		      dateText.innerHTML = month + '-' + day + '-' + year;
+                    }
+
+                    function updateTime(){
+                      let getTime = result['timeZone']['time'];
+            		      let sliceTime = getTime.slice(11,16);
+            		      clockText.innerHTML = sliceTime;
+                    }
+
+                    function updateSunrise(){
+                      if(result['timeZone']['sunrise']){
+            						let getSunRiseTime = result['timeZone']['sunrise'];
+            						let newGetSunRiseTime = getSunRiseTime.slice(11,16);
+            						sunRiseText.innerHTML = newGetSunRiseTime;
+            					}
+                    }
+
+                    function updateSunset(){
+                      if(result['timeZone']['sunset']){
+            			      let getSunSetTime = result['timeZone']['sunset'];
+            			      let newGetSunSetTime = getSunSetTime.slice(11,16);
+            			      sunSetText.innerHTML = newGetSunSetTime;
+            					}
+                    }
+
+                    function updateTemp(){
+                      let kelvinTemp = result['openWeather']['main']['temp'];
+            		      let finalTemp = Math.round(kelvinTemp - 273.15);
+            		      tempText.innerHTML = finalTemp + '&#8451;';
+                    }
+
+                    function updateWeatherIcon(){
+                      var iconCode = result.openWeather.weather[0].icon;
+            		      var iconUrl = "http://openweathermap.org/img/w/" + iconCode + ".png";
+            		      document.getElementById("weather-icon-image").src= iconUrl;
+                    }
+
+          		      function updateWind(){
+                      let countryWind = result['openWeather']['wind']['speed'];
+            		      let finalWind = Math.round(countryWind * 2.237);
+            		      windText.innerHTML = finalWind + 'mph';
+                    }
+
+          		      function updateSkyConditions(){
+                      let countrySky = result['openWeather']['weather'][0]['main'];
+            		      skyText.innerHTML = countrySky;
+                    }
+
+                    function updateHumidity(){
+                      let countryHumidity = result['openWeather']['main']['humidity'];
+            		      humidityText.innerHTML = countryHumidity + '%';
+                    }
+
+                    function updateSelectBox(){
+                      document.getElementById("placeholder1").innerHTML = countryName;
+                    }
+
+                    function darkModeToggle(){
+                      let realTime = result['openWeather']['dt'];
+          						let sunriseTime = result['openWeather']['sys']['sunrise'];
+          						let sunsetTime = result['openWeather']['sys']['sunset'];
+
+          						if(realTime > sunriseTime && realTime < sunsetTime){
+          							lightMode();
+          							document.getElementById('loader-box').style.backgroundColor = lightBC;
+          						} else {
+          							darkMode();
+          							document.getElementById('loader-box').style.backgroundColor = darkBC;
+          		 				}
+                    }
+
+//--------------------------------------------------country bordrr api start
+      					$.ajax({
+      							url: "libs/php/countryBorder.php",
+      							type: 'POST',
+      							dataType: 'json',
+                    data: {
+        							code: iso3CountryCode
+          					},
+      							success: function(result) {
+      								//console.dir(result);
+
+                      let borderColour = document.getElementById('colour-picker').value;
+
+                      var border;
+                      var myStyle = {
+                          "color": borderColour,
+                          "weight": 3,
+                          "opacity": 0.65
+                      };
+
+                      border = L.geoJSON(result['data']['border'], {
+                          style: myStyle
+                      }).addTo(map);
+
+                    map.fitBounds(border.getBounds());
+      					},
+      							error: function(jqXHR, textStatus, errorThrown) {
+      							console.log(errorThrown);
+      						}
+      					});
+//--------------------------------------------------countryBorder api end
+//--------------------------------------------------other changes api start
+      					$.ajax({
+      						url: "libs/php/project1v2.php",
+      						type: 'GET',
+      						dataType: 'json',
+      						data: {
+      							countryCode: countryCode,
+      							countryName: countryName,
+                    is03: iso3CountryCode,
                     ios2Code: ios2Code
-                  },
-                  success: function(result) {
-                    //console.dir(result);
+      						},
+      						beforeSend: function(){
+      						// Show loader before page renders
+      						$("#loader-box").show();
+      					 },
+      						success: function(result) {
+      							//console.dir(result);
 
-                      var myStringArray = result['pointsOfInterest']['results'];
-                      var markers = L.markerClusterGroup();
+                    var myStringArray = result['pointsOfInterest']['results'];
+                    var markers = L.markerClusterGroup();
 
-                        for (var i = 0; i < myStringArray.length; i++) {
+                      for (var i = 0; i < myStringArray.length; i++) {
 
-                          let poiLat = myStringArray[i]['coordinates']['latitude'];
-                          let poiLng = myStringArray[i]['coordinates']['longitude'];
-                          let poiName = myStringArray[i]['name'];
+                        let poiLat = myStringArray[i]['coordinates']['latitude'];
+                        let poiLng = myStringArray[i]['coordinates']['longitude'];
+                        let poiName = myStringArray[i]['name'];
 
-                          var title = poiName;
-                          var marker = L.marker(new L.LatLng(poiLat, poiLng), {icon: travelDestination}, {
-                            title: title
-                          });
-                          marker.bindPopup(title);
-                          markers.addLayer(marker);
-                        }
-
-                        map.addLayer(markers);
-
-                  },
-                  error: function(jqXHR, textStatus, errorThrown) {
-                    console.log(errorThrown);
-                  }
-                });
-
-
-					$.ajax({
-							url: "libs/php/countryBorder.php",
-							type: 'POST',
-							dataType: 'json',
-              data: {
-  							code: iso3CountryCode
-    					},
-							success: function(result) {
-								//console.dir(result);
-
-                let borderColour = document.getElementById('colour-picker').value;
-
-                var border;
-                var myStyle = {
-                    "color": borderColour,
-                    "weight": 3,
-                    "opacity": 0.65
-                };
-
-                border = L.geoJSON(result['data']['border'], {
-                    style: myStyle
-                }).addTo(map);
-
-              map.fitBounds(border.getBounds());
-
-
-					},
-							error: function(jqXHR, textStatus, errorThrown) {
-							console.log(errorThrown);
-						}
-					});
-
-					$.ajax({
-						url: "libs/php/project1v2.php",
-						type: 'GET',
-						dataType: 'json',
-						data: {
-							countryCode: countryCode,
-							countryName: countryName,
-              is03: iso3CountryCode
-						},
-						beforeSend: function(){
-						// Show loader before page renders
-						$("#loader-box").show();
-					 },
-						success: function(result) {
-							//console.dir(result);
-
-              //change all data
-              updateCapital();
-              updatePopulation();
-              updateLanguage();
-              updateFlag();
-              updatePlaceholder();
-              updateLinks();
-              updateWikiImage();
-              updateNews();
-
-              //functions
-              function updateCapital(){
-                let capitalName = result['restCountries']['capital'];
-                capitalTitle.innerHTML = capitalName;
-              }
-
-              function updatePopulation(){
-                let populationName = result['restCountries']['population'];
-                const numb = populationName;
-                //add commas
-                function separator(numb) {
-                  var str = numb.toString().split(".");
-                  str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                  return str.join(".");
-                }
-
-                finalPopulation = separator(populationName);
-                populationTitle.innerHTML = finalPopulation;
-              }
-
-              function updateLanguage(){
-                let languageName = result['restCountries']['languages'][0]['name'];
-                languageTitle.innerHTML = languageName;
-              }
-
-              function updateFlag(){
-                let flagLink = result['restCountries']['flags']['png'];
-  							document.getElementById("flag-image").src= flagLink;
-              }
-
-
-              function updatePlaceholder(){
-                //reset form each time
-                document.getElementById("currency-form").reset();
-                clearVal();
-
-                let currencyPlaceHolder = result['restCountries']['currencies'][0]['code'];
-                placeholderText.innerHTML = 'Your Currency is: ' + currencyPlaceHolder;
-                document.getElementById("placeholder").value = currencyPlaceHolder;
-              }
-
-              function updateNews(){
-
-                  if(result['news']['results'][0]){
-                    let news1 = result['news']['results'][0]['title'];
-                    let news1HREF = result['news']['results'][0]['link'];
-                    newsHeadline1.innerHTML = news1;
-                    newsHeadline1.href = news1HREF;
-                  } else {
-                    newsHeadline1.innerHTML = 'News Not Available';
-                    newsHeadline1.href = '#';
-                  }
-
-                  if(result['news']['results'][1]){
-                    let news2 = result['news']['results'][1]['title'];
-                    let news2HREF = result['news']['results'][1]['link'];
-                    newsHeadline2.innerHTML = news2;
-                    newsHeadline2.href = news2HREF;
-                  } else {
-                    newsHeadline2.innerHTML = 'News Not Available';
-                    newsHeadline2.href = '#';
-                  }
-
-                  if(result['news']['results'][2]){
-                    let news3 = result['news']['results'][2]['title'];
-                    let news3HREF = result['news']['results'][2]['link'];
-                    newsHeadline3.innerHTML = news3;
-                    newsHeadline3.href = news3HREF;
-                  } else {
-                    newsHeadline3.innerHTML = 'News Not Available';
-                    newsHeadline3.href = '#';
-                  }
-                }
-
-
-              let currencyCode = result['restCountries']['currencies'][0]['code'];
-
-
-//----------------------------------------------------------api call for getting currency
-                  $.ajax({
-          						url: "libs/php/currency.php",
-          						type: 'GET',
-          						dataType: 'json',
-          						data: {
-          							currencyCode: currencyCode
-          						},
-          						success: function(result) {
-          							//console.dir(result);
-
-                        getCurrencyValue();
-
-                        toCurrecy.addEventListener('change', (event) => {
-                        	resultTo = `${event.target.value}`;
+                        var title = poiName;
+                        var marker = L.marker(new L.LatLng(poiLat, poiLng), {icon: travelDestination}, {
+                          title: title
                         });
+                        marker.bindPopup(title);
+                        markers.addLayer(marker);
+                      }
 
-                        function getCurrencyValue(){
-                          resultFrom = document.getElementById('placeholder').value;
+                      map.addLayer(markers);
+
+
+                    //change all data
+                    updateCapital();
+                    updatePopulation();
+                    updateLanguage();
+                    updateFlag();
+                    updatePlaceholder();
+                    updateLinks();
+                    updateWikiImage();
+                    updateNews();
+
+                    //functions
+                    function updateCapital(){
+                      let capitalName = result['restCountries']['capital'];
+                      capitalTitle.innerHTML = capitalName;
+                    }
+
+                    function updatePopulation(){
+                      let populationName = result['restCountries']['population'];
+                      const numb = populationName;
+                      //add commas
+                      function separator(numb) {
+                        var str = numb.toString().split(".");
+                        str[0] = str[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                        return str.join(".");
+                      }
+
+                      finalPopulation = separator(populationName);
+                      populationTitle.innerHTML = finalPopulation;
+                    }
+
+                    function updateLanguage(){
+                      let languageName = result['restCountries']['languages'][0]['name'];
+                      languageTitle.innerHTML = languageName;
+                    }
+
+                    function updateFlag(){
+                      let flagLink = result['restCountries']['flags']['png'];
+        							document.getElementById("flag-image").src= flagLink;
+                    }
+
+
+                    function updatePlaceholder(){
+                      //reset form each time
+                      document.getElementById("currency-form").reset();
+                      clearVal();
+
+                      let currencyPlaceHolder = result['restCountries']['currencies'][0]['code'];
+                      placeholderText.innerHTML = 'Your Currency is: ' + currencyPlaceHolder;
+                      document.getElementById("placeholder").value = currencyPlaceHolder;
+                    }
+
+                    function updateNews(){
+                        if(result['news']['results'][0]){
+                          let news1 = result['news']['results'][0]['title'];
+                          let news1HREF = result['news']['results'][0]['link'];
+                          newsHeadline1.innerHTML = news1;
+                          newsHeadline1.href = news1HREF;
+                        } else {
+                          newsHeadline1.innerHTML = 'News Not Available';
+                          newsHeadline1.href = '#';
                         }
 
-                        fromCurrecy.addEventListener('change', (event) => {
-                          resultFrom = `${event.target.value}`;
-                        });
-
-                        search.addEventListener('input', updateValue);
-
-                        function updateValue(e) {
-                        	searchValue = e.target.value;
+                        if(result['news']['results'][1]){
+                          let news2 = result['news']['results'][1]['title'];
+                          let news2HREF = result['news']['results'][1]['link'];
+                          newsHeadline2.innerHTML = news2;
+                          newsHeadline2.href = news2HREF;
+                        } else {
+                          newsHeadline2.innerHTML = 'News Not Available';
+                          newsHeadline2.href = '#';
                         }
 
-                        convert.addEventListener("click", displayResults);
-
-                        function displayResults(currency) {
-                        	let fromRate = result['currency']['rates'][resultFrom];
-                        	let toRate = result['currency']['rates'][resultTo];
-                        	finalValue.innerHTML = ((toRate / fromRate) * searchValue).toFixed(2);
-                        	finalAmount.style.display = "block";
+                        if(result['news']['results'][2]){
+                          let news3 = result['news']['results'][2]['title'];
+                          let news3HREF = result['news']['results'][2]['link'];
+                          newsHeadline3.innerHTML = news3;
+                          newsHeadline3.href = news3HREF;
+                        } else {
+                          newsHeadline3.innerHTML = 'News Not Available';
+                          newsHeadline3.href = '#';
                         }
+                      }
 
-          						},
-          						error: function(jqXHR, textStatus, errorThrown) {
-          							console.log(errorThrown);
-          						}
-          					});
+                      function updateLinks(){
+                        let link1Final = result['wikipedia']['geonames'][0]['wikipediaUrl'];
+                        link1Text.innerHTML = 'Wikipedia Link 1';
+                        link1Text.href = 'https://' + link1Final;
 
-              function updateLinks(){
-                let link1Final = result['wikipedia']['geonames'][0]['wikipediaUrl'];
-                link1Text.innerHTML = 'Wikipedia Link 1';
-                link1Text.href = 'https://' + link1Final;
+                        let link2Final = result['wikipedia']['geonames'][1]['wikipediaUrl'];
+                        link2Text.innerHTML = 'Wikipedia Link 2';
+                        link2Text.href = 'https://' + link2Final;
 
-                let link2Final = result['wikipedia']['geonames'][1]['wikipediaUrl'];
-                link2Text.innerHTML = 'Wikipedia Link 2';
-                link2Text.href = 'https://' + link2Final;
+                        let link3Final = result['wikipedia']['geonames'][2]['wikipediaUrl'];
+                        link3Text.innerHTML = 'Wikipedia Link 3';
+                        link3Text.href = 'https://' + link3Final;
 
-                let link3Final = result['wikipedia']['geonames'][2]['wikipediaUrl'];
-                link3Text.innerHTML = 'Wikipedia Link 3';
-                link3Text.href = 'https://' + link3Final;
+                        let link4Final = result['wikipedia']['geonames'][3]['wikipediaUrl'];
+                        link4Text.innerHTML = 'Wikipedia Link 4';
+                        link4Text.href = 'https://' + link4Final;
 
-                let link4Final = result['wikipedia']['geonames'][3]['wikipediaUrl'];
-                link4Text.innerHTML = 'Wikipedia Link 4';
-                link4Text.href = 'https://' + link4Final;
+                        let link5Final = result['wikipedia']['geonames'][4]['wikipediaUrl'];
+                        link5Text.innerHTML = 'Wikipedia Link 5';
+                        link5Text.href = 'https://' + link5Final;
+                      }
 
-                let link5Final = result['wikipedia']['geonames'][4]['wikipediaUrl'];
-                link5Text.innerHTML = 'Wikipedia Link 5';
-                link5Text.href = 'https://' + link5Final;
-              }
+                      function updateWikiImage(){
+                        let wikiImage = result['wikipedia']['geonames'][0]['thumbnailImg'];
+                        document.getElementById("wikipedia-image").src= wikiImage;
+                      }
 
-              function updateWikiImage(){
-                let wikiImage = result['wikipedia']['geonames'][0]['thumbnailImg'];
-                document.getElementById("wikipedia-image").src= wikiImage;
-              }
+                    let currencyCode = result['restCountries']['currencies'][0]['code'];
+      //----------------------------------------------------------api call for getting currency
+                        $.ajax({
+                						url: "libs/php/currency.php",
+                						type: 'GET',
+                						dataType: 'json',
+                						data: {
+                							currencyCode: currencyCode
+                						},
+                						success: function(result) {
+                							//console.dir(result);
 
-						},
-						error: function(jqXHR, textStatus, errorThrown) {
-							console.log(errorThrown);
-						},
-						complete:function(data){
-				       $("#loader-box").hide();
-				}
-					});
+                              getCurrencyValue();
 
-          //change other data
-          updateHeader();
-          updateContinent();
-          updateDate();
-          updateTime();
-          updateSunrise();
-          updateSunset();
-          updateTemp();
-          updateWeatherIcon();
-          updateWind();
-          updateSkyConditions();
-          updateHumidity();
-          updateSelectBox();
-          darkModeToggle();
+                              toCurrecy.addEventListener('change', (event) => {
+                              	resultTo = `${event.target.value}`;
+                              });
 
+                              function getCurrencyValue(){
+                                resultFrom = document.getElementById('placeholder').value;
+                              }
 
-					function updateHeader(){
-            let countryCountry = result['openCage']['country'];
-  					header.innerHTML = countryCountry;
-          }
+                              fromCurrecy.addEventListener('change', (event) => {
+                                resultFrom = `${event.target.value}`;
+                              });
 
-          function updateContinent(){
-            let continentName = result['openCage']['continent'];
-  		      continentTitle.innerHTML = continentName;
-          }
+                              search.addEventListener('input', updateValue);
 
-          function updateDate(){
-  		      let getDate = result['timeZone']['time'];
-  		      let sliceDate = getDate.slice(0,10);
-  					let year = getDate.slice(0,4);
-  					let day = getDate.slice(5,7);
-  					let month = getDate.slice(8,10);
-  		      dateText.innerHTML = month + '-' + day + '-' + year;
-          }
+                              function updateValue(e) {
+                              	searchValue = e.target.value;
+                              }
 
-          function updateTime(){
-            let getTime = result['timeZone']['time'];
-  		      let sliceTime = getTime.slice(11,16);
-  		      clockText.innerHTML = sliceTime;
-          }
+                              convert.addEventListener("click", displayResults);
 
-          function updateSunrise(){
-            if(result['timeZone']['sunrise']){
-  						let getSunRiseTime = result['timeZone']['sunrise'];
-  						let newGetSunRiseTime = getSunRiseTime.slice(11,16);
-  						sunRiseText.innerHTML = newGetSunRiseTime;
-  					}
-          }
+                              function displayResults(currency) {
+                              	let fromRate = result['currency']['rates'][resultFrom];
+                              	let toRate = result['currency']['rates'][resultTo];
+                              	finalValue.innerHTML = ((toRate / fromRate) * searchValue).toFixed(2);
+                              	finalAmount.style.display = "block";
+                              }
 
-          function updateSunset(){
-            if(result['timeZone']['sunset']){
-  			      let getSunSetTime = result['timeZone']['sunset'];
-  			      let newGetSunSetTime = getSunSetTime.slice(11,16);
-  			      sunSetText.innerHTML = newGetSunSetTime;
-  					}
-          }
-
-          function updateTemp(){
-            let kelvinTemp = result['openWeather']['main']['temp'];
-  		      let finalTemp = Math.round(kelvinTemp - 273.15);
-  		      tempText.innerHTML = finalTemp + '&#8451;';
-          }
-
-          function updateWeatherIcon(){
-            var iconCode = result.openWeather.weather[0].icon;
-  		      var iconUrl = "http://openweathermap.org/img/w/" + iconCode + ".png";
-  		      document.getElementById("weather-icon-image").src= iconUrl;
-          }
-
-		      function updateWind(){
-            let countryWind = result['openWeather']['wind']['speed'];
-  		      let finalWind = Math.round(countryWind * 2.237);
-  		      windText.innerHTML = finalWind + 'mph';
-          }
-
-		      function updateSkyConditions(){
-            let countrySky = result['openWeather']['weather'][0]['main'];
-  		      skyText.innerHTML = countrySky;
-          }
-
-          function updateHumidity(){
-            let countryHumidity = result['openWeather']['main']['humidity'];
-  		      humidityText.innerHTML = countryHumidity + '%';
-          }
-
-          function updateSelectBox(){
-            document.getElementById("placeholder1").innerHTML = countryName;
-          }
-
-          function darkModeToggle(){
-            let realTime = result['openWeather']['dt'];
-						let sunriseTime = result['openWeather']['sys']['sunrise'];
-						let sunsetTime = result['openWeather']['sys']['sunset'];
-
-						if(realTime > sunriseTime && realTime < sunsetTime){
-							lightMode();
-							document.getElementById('loader-box').style.backgroundColor = lightBC;
-						} else {
-							darkMode();
-							document.getElementById('loader-box').style.backgroundColor = darkBC;
-		 				}
-          }
-
-			} //if else end
-		},
-		error: function(jqXHR, textStatus, errorThrown) {
-			console.log(errorThrown);
-		}
-	});
+                						},
+                						error: function(jqXHR, textStatus, errorThrown) {
+                							console.log(errorThrown);
+                						}
+                					});
+//---------------------------------------------------------------------------------------------------------api currency end
+      						},
+      						error: function(jqXHR, textStatus, errorThrown) {
+      							console.log(errorThrown);
+      						},
+      						complete:function(data){
+      				       $("#loader-box").hide();
+      				}
+      					});
+//--------------------------------------------------other changes api end
+      			} //if else end
+      		},
+      		error: function(jqXHR, textStatus, errorThrown) {
+      			console.log(errorThrown);
+      		}
+      	});
 }
 
 //-----------------------------------------------------------------------------------------dark mode
