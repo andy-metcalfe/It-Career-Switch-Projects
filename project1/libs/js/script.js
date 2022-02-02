@@ -281,22 +281,26 @@ function getAll(){
 									 lng: countryLongitude
 								 };
 
+								 let group;
+
 								 let borderLines = result['data']['border'];
 
-								 if(countryMarker != undefined){
-	 								map.removeLayer(countryMarker);
-	 								}
+									if(countryMarker != undefined){
+								   map.removeLayer(countryMarker);
+ 	 								}
+
+								  if(border != undefined){
+								   map.removeLayer(border);
+ 	 								}
 
 								 countryMarker = L.marker(d,{icon: countryClick});
 								 countryMarker.addTo(map).bindPopup(countryCountry).openPopup();
 
-								 if(border != undefined){
-	 								map.removeLayer(border);
-	 							}
-
 								 border = L.geoJSON(borderLines,{style: myStyle}).addTo(map);
+
+								 group = L.featureGroup([border,countryMarker]).addTo(map);
 								 map.fitBounds(border.getBounds());
-					 },
+						},
 							 error: function(jqXHR, textStatus, errorThrown) {
 							 console.log(errorThrown);
 							 showErrorBox();
