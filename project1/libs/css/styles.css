@@ -360,6 +360,9 @@ html, body, #map {
  #images-whole-container {
   min-height: 500px;
 }
+ #country-select-container{
+   width: 180px;
+}
 }
 @media only screen and (max-width: 400px) {
   #temp-container{
