@@ -27,6 +27,7 @@ let border;
 let countryMarker;
 let wikiMarkers;
 let resultCountry;
+let clockInterval;
 
 //icons
 var travelDestination = L.ExtraMarkers.icon({
@@ -265,7 +266,7 @@ function getAll(){
             var currentTime;
 
             
-            let clockInterval;
+            
             if(clockInterval) {clearInterval(clockInterval)}
             clock();
             clockInterval = setInterval(clock,1000);
