@@ -1,1 +1,743 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <link rel="stylesheet" href="libs/css/bootstrap.css">
+    <link rel="stylesheet" href="libs/css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="libs/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="libs/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="libs/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="libs/favicon_io/site.webmanifest">
+
+    <link rel="stylesheet" href="libs/css/leaflet.extra-markers.min.css">
+    <link href="libs/css/all.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.3.0/dist/MarkerCluster.Default.css" />
+
+    <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw==" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.3.0/dist/leaflet.markercluster.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.css">
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-easybutton@2/src/easy-button.js"></script>
+
+    <title>Gazetteer</title>
+  </head>
+
+  <body>
+
+<!--Overview data -->
+    <div  data-bs-target="#overview-pop-up">
+    <div class="modal fade" id="overview-pop-up" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="row">
+            <div id="country-container">
+              <h5 class="modal-title headline-title" id="country">Overview</h5>
+                <div id="flag-container" class="div-boxes">
+                  <img id="flag-image" src="">
+                </div>
+                <div>
+                  <div class="overview-left">
+                    <span class="inline"><i class="fas fa-globe-africa"></i> <p class="title-text" id="continent-title"></p></span>
+                    <span class="inline"><i class="far fa-flag"></i><p class="title-text" id="capital-title"></p></span>
+                    <span class="inline"><i class="fas fa-user-friends"></i><p class="title-text" id="population-title"></p></span>
+                  </div>
+                  <div class="overview-right">
+                    <span class="inline"><i class="fas fa-language"></i><p class="title-text" id="language-title"></p></span>
+                    <span class="inline"><i class="fas fa-coins"></i><p class="title-text" id="currency-title"></p></span>
+                    <span class="inline"><i class="fas fa-fist-raised"></i><p class="title-text" id="independent-title"></p></span>
+                  </div>
+                </div>
+                <div>
+                    <div class="date-time-box" id="date-container">
+                      <p class="date-time-text" id="date-text">31st JAN 2021</p>
+                    </div>
+                    <div class="date-time-box" id="time-container">
+                        <p class="date-time-text" id="clock-container">00:00</p>
+                    </div>
+                </div>
+                <div>
+                    <div class="sunset-box">
+                      <i class="fas fa-cloud-sun"></i> <p class="date-time-text" id="sun-rise-text">00:00</p>
+                    </div>
+                    <div class="sunset-box">
+                        <i class="fas fa-cloud-moon"></i> <p class="date-time-text" id="sun-set-text">00:00</p>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!--Currency data -->
+
+  <div  data-bs-target="#currency-pop-up">
+  <div class="modal fade" id="currency-pop-up" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div id="currency-header-div" class="sub-header"><i class="fas fa-coins"></i></i><p id="currency-header">Currency</p></div>
+            <div id="form-container" class="container px-5 my-5">
+            <form id="currency-form">
+            <div class="row">
+              <div>
+                  <div id="amount-to-convert-div" class="form-floating mb-3 form-box">
+                    <input type="text" class="searchBox form-control" placeholder="0.00" id="oamount">
+                    <label for="oamount"><p>Amount to Convert:</p></label>
+                  </div>
+                  <div class="form-floating mb-3 form-box">
+                    <label for="sel1"></label>
+                      <select class="from form-control" id="sel1">
+                          <option id="placeholder" value=""></option>
+                          <option value="EUR">EUR (Euro)</option>
+                          <option value="GBP">GBP (British pound)</option>
+                          <option value="USD">USD (Dollars)</option>
+                          <option value="AED">AED (UAE Dirham)</option>
+                          <option value="AFN">AFN (Afghan Afghani)</option>
+                          <option value="ALL">ALL (Qindarka)</option>
+                          <option value="AMD">AMD (Armenian Dram)</option>
+                          <option value="ANG">ANG (Antillean Guilder)</option>
+                          <option value="AOA">AOA (Angolan Kwanza)</option>
+                          <option value="ARS">ARS (Argentine Peso)</option>
+                          <option value="AUD">AUD (Australian Dollar)</option>
+                          <option value="AWG">AWG (Aruban Florin)</option>
+                          <option value="AZN">AZN (Azerbaijani Manat)</option>
+                          <option value="BAM">BAM (BH Convertible Mark)</option>
+                          <option value="BBD">BBD (Bajan dollar)</option>
+                          <option value="BDT">BDT (Bangladeshi Taka)</option>
+                          <option value="BGN">BGN (Bulgarian Lev)</option>
+                          <option value="BHD">BHD (Bahraini Dinar)</option>
+                          <option value="BIF">BIF (Burundian Franc)</option>
+                          <option value="BMD">BMD (Bermudan Dollar)</option>
+                          <option value="BND">BND (Brunei Dollar)</option>
+                          <option value="BOB">BOB (Bolivian Boliviano)</option>
+                          <option value="BRL">BRL (Brazilian Real)</option>
+                          <option value="BSD">BSD (Bahamian Dollar)</option>
+                          <option value="BTN">BTN (Bhutan currency)</option>
+                          <option value="BWP">BWP (Botswanan Pula)</option>
+                          <option value="BYN">BYN (Belarusian Ruble)</option>
+                          <option value="BZD">BZD (Belize Dollar)</option>
+                          <option value="CAD">CAD (Canadian Dollar)</option>
+                          <option value="CDF">CDF (Congolese Franc)</option>
+                          <option value="CHF">CHF (Swiss Franc)</option>
+                          <option value="CLP">CLP (Chilean Peso)</option>
+                          <option value="CNY">CNY (Chinese Yuan)</option>
+                          <option value="COP">COP (Colombian Peso)</option>
+                          <option value="CRC">CRC (Costa Rican Colón)</option>
+                          <option value="CUP">CUP (Cuban Peso)</option>
+                          <option value="CVE">CVE (Cape Verdean Escudo)</option>
+                          <option value="CZK">CZK (Czech Koruna)</option>
+                          <option value="DJF">DJF (Djiboutian Franc)</option>
+                          <option value="DKK">DKK (Danish Krone)</option>
+                          <option value="DOP">DOP (Dominican Peso)</option>
+                          <option value="DZD">DZD (Algerian Dinar)</option>
+                          <option value="EGP">EGP (Egyptian Pound)</option>
+                          <option value="ERN">ERN (Eritrean nakfa)</option>
+                          <option value="ETB">ETB (Ethiopian Birr)</option>
+                          <option value="FJD">FJD (Fijian Dollar)</option>
+                          <option value="FKP">FKP (Falkland Islands pound)</option>
+                          <option value="FOK">FOK (Faroese króna)</option>
+                          <option value="GEL">GEL (Georgian Lari)</option>
+                          <option value="GGP">GGP (Guernsey pound)</option>
+                          <option value="GHS">GHS (Ghanaian Cedi)</option>
+                          <option value="GIP">GIP (Gibraltar pound)</option>
+                          <option value="GMD">GMD (Gambian dalasi)</option>
+                          <option value="GNF">GNF (Guinean Franc)</option>
+                          <option value="GTQ">GTQ (Guatemalan Quetzal)</option>
+                          <option value="GYD">GYD (Guyanaese Dollar)</option>
+                          <option value="HKD">HKD (Hong Kong Dollar)</option>
+                          <option value="HNL">HNL (Honduran Lempira)</option>
+                          <option value="HRK">HRK (Croatian Kuna)</option>
+                          <option value="HTG">HTG (Haitian Gourde)</option>
+                          <option value="HUF">HUF (Hungarian Forint)</option>
+                          <option value="IDR">IDR (Indonesian Rupiah)</option>
+                          <option value="ILS">ILS (Israeli New Shekel)</option>
+                          <option value="IMP">IMP (Manx pound)</option>
+                          <option value="INR">INR (Indian Rupee)</option>
+                          <option value="IQD">IQD (Iraqi Dinar)</option>
+                          <option value="IRR">IRR (Iranian Rial)</option>
+                          <option value="ISK">ISK (Icelandic Króna)</option>
+                          <option value="JEP">JEP (Jersey pound)</option>
+                          <option value="JMD">JMD (Jamaican Dollar)</option>
+                          <option value="JOD">JOD (Jordanian Dinar)</option>
+                          <option value="JPY">JPY (Japanese Yen)</option>
+                          <option value="KES">KES (Kenyan Shilling)</option>
+                          <option value="KGS">KGS (Kyrgystani Som)</option>
+                          <option value="KHR">KHR (Cambodian riel)</option>
+                          <option value="KID">KID (Kiribati Dollar)</option>
+                          <option value="KMF">KMF (Comorian franc)</option>
+                          <option value="KRW">KRW (South Korean won)</option>
+                          <option value="KWD">KWD (Kuwaiti Dinar)</option>
+                          <option value="KYD">KYD (Cayman Islands Dollar)</option>
+                          <option value="KZT">KZT (Kazakhstani Tenge)</option>
+                          <option value="LAK">LAK (Laotian Kip)</option>
+                          <option value="LBP">LBP (Lebanese pound)</option>
+                          <option value="LKR">LKR (Sri Lankan Rupee)</option>
+                          <option value="LRD">LRD (Liberian Dollar)</option>
+                          <option value="LSL">LSL (Lesotho loti)</option>
+                          <option value="LYD">LYD (Libyan Dinar)</option>
+                          <option value="MAD">MAD (Moroccan Dirham)</option>
+                          <option value="MDL">MDL (Moldovan Leu)</option>
+                          <option value="MGA">MGA (Malagasy Ariary)</option>
+                          <option value="MKD">MKD (Macedonian Denar)</option>
+                          <option value="MMK">MMK (Myanmar Kyat)</option>
+                          <option value="MNT">MNT (Mongolian tögrög)</option>
+                          <option value="MOP">MOP (Macanese Pataca)</option>
+                          <option value="MRU">MRU (Mauritanian Ouguiya)</option>
+                          <option value="MUR">MUR (Mauritian Rupee)</option>
+                          <option value="MVR">MVR (Maldivian Rufiyaa)</option>
+                          <option value="MWK">MWK (Malawian Kwacha)</option>
+                          <option value="MXN">MXN (Mexican Peso)</option>
+                          <option value="MYR">MYR (Malaysian Ringgit)</option>
+                          <option value="MZN">MZN (Mozambican metical)</option>
+                          <option value="NAD">NAD (Namibian dollar)</option>
+                          <option value="NGN">NGN (Nigerian Naira)</option>
+                          <option value="NIO">NIO (Nicaraguan Córdoba)</option>
+                          <option value="NOK">NOK (Norwegian Krone)</option>
+                          <option value="NPR">NPR (Nepalese Rupee)</option>
+                          <option value="NZD">NZD (New Zealand Dollar)</option>
+                          <option value="OMR">OMR (Omani Rial)</option>
+                          <option value="PAB">PAB (Panamanian Balboa)</option>
+                          <option value="PEN">PEN (Sol)</option>
+                          <option value="PGK">PGK (Papua New Guinean Kina)</option>
+                          <option value="PHP">PHP (Philippine peso)</option>
+                          <option value="PKR">PKR (Pakistani Rupee)</option>
+                          <option value="PLN">PLN (Poland złoty)</option>
+                          <option value="PYG">PYG (Paraguayan Guarani)</option>
+                          <option value="QAR">QAR (Qatari Rial)</option>
+                          <option value="RON">RON (Romanian Leu)</option>
+                          <option value="RSD">RSD (Serbian Dinar)</option>
+                          <option value="RUB">RUB (Russian Ruble)</option>
+                          <option value="RWF">RWF (Rwandan franc)</option>
+                          <option value="SAR">SAR (Saudi Riyal)</option>
+                          <option value="SBD">SBD (Solomon Islands Dollar)</option>
+                          <option value="SCR">SCR (Seychellois Rupee)</option>
+                          <option value="SDG">SDG (Sudanese pound)</option>
+                          <option value="SEK">SEK (Swedish Krona)</option>
+                          <option value="SGD">SGD (Singapore Dollar)</option>
+                          <option value="SHP">SHP (Saint Helena pound)</option>
+                          <option value="SLL">SLL (Sierra Leonean Leone)</option>
+                          <option value="SOS">SOS (Somali Shilling)</option>
+                          <option value="SRD">SRD (Surinamese Dollar)</option>
+                          <option value="SSP">SSP (South Sudanese pound)</option>
+                          <option value="STN">STN (São Tomé and Príncipe dobra)</option>
+                          <option value="SYP">SYP (Syrian pound)</option>
+                          <option value="SZL">SZL (Swazi Lilangeni)</option>
+                          <option value="THB">THB (Thai Bah)</option>
+                          <option value="TJS">TJS (Tajikistani Somoni)</option>
+                          <option value="TMT">TMT (Turkmenistani manat)</option>
+                          <option value="TND">TND (Tunisian Dinar)</option>
+                          <option value="TOP">TOP (Tongan Paʻanga)</option>
+                          <option value="TRY">TRY (Turkish lira)</option>
+                          <option value="TTD">TTD (Trinidad & Tobago Dollar)</option>
+                          <option value="TVD">TVD (Tuvaluan dollar)</option>
+                          <option value="TWD">TWD (New Taiwan dollar)</option>
+                          <option value="TZS">TZS (Tanzanian Shilling)</option>
+                          <option value="UAH">UAH (Ukrainian hryvnia)</option>
+                          <option value="UGX">UGX (Ugandan Shilling)</option>
+                          <option value="UYU">UYU (Uruguayan Peso)</option>
+                          <option value="UZS">UZS (Uzbekistani Som)</option>
+                          <option value="VES">VES (Venezuelan bolívar)</option>
+                          <option value="VND">VND (Vietnamese dong)</option>
+                          <option value="VUV">VUV (Vanuatu vatu)</option>
+                          <option value="WST">WST (Samoan tālā)</option>
+                          <option value="XAF">XAF (Central African CFA franc)</option>
+                          <option value="XCD">XCD (East Caribbean Dollar)</option>
+                          <option value="XOF">XOF (West African franc)</option>
+                          <option value="XPF">XPF (CFP Franc)</option>
+                          <option value="YER">YER (Yemeni Rial)</option>
+                          <option value="ZAR">ZAR (South African Rand)</option>
+                          <option value="ZMW">ZMW (Zambian Kwacha)</option>
+                          <option value="ZWL">ZWL (Zimbabwean dollar)</option>
+                        </select>
+                        <br>
+                  </div>
+                  <div class="form-floating mb-3 form-box">
+                    <label for="sel2"></label>
+                        <select class="to form-control" id="sel2">
+                          <option value="">Select One …</option>
+                          <option value="EUR">EUR (Euro)</option>
+                          <option value="GBP">GBP (British pound)</option>
+                          <option value="USD">USD (Dollars)</option>
+                          <option value="AED">AED (UAE Dirham)</option>
+                          <option value="AFN">AFN (Afghan Afghani)</option>
+                          <option value="ALL">ALL (Qindarka)</option>
+                          <option value="AMD">AMD (Armenian Dram)</option>
+                          <option value="ANG">ANG (Antillean Guilder)</option>
+                          <option value="AOA">AOA (Angolan Kwanza)</option>
+                          <option value="ARS">ARS (Argentine Peso)</option>
+                          <option value="AUD">AUD (Australian Dollar)</option>
+                          <option value="AWG">AWG (Aruban Florin)</option>
+                          <option value="AZN">AZN (Azerbaijani Manat)</option>
+                          <option value="BAM">BAM (BH Convertible Mark)</option>
+                          <option value="BBD">BBD (Bajan dollar)</option>
+                          <option value="BDT">BDT (Bangladeshi Taka)</option>
+                          <option value="BGN">BGN (Bulgarian Lev)</option>
+                          <option value="BHD">BHD (Bahraini Dinar)</option>
+                          <option value="BIF">BIF (Burundian Franc)</option>
+                          <option value="BMD">BMD (Bermudan Dollar)</option>
+                          <option value="BND">BND (Brunei Dollar)</option>
+                          <option value="BOB">BOB (Bolivian Boliviano)</option>
+                          <option value="BRL">BRL (Brazilian Real)</option>
+                          <option value="BSD">BSD (Bahamian Dollar)</option>
+                          <option value="BTN">BTN (Bhutan currency)</option>
+                          <option value="BWP">BWP (Botswanan Pula)</option>
+                          <option value="BYN">BYN (Belarusian Ruble)</option>
+                          <option value="BZD">BZD (Belize Dollar)</option>
+                          <option value="CAD">CAD (Canadian Dollar)</option>
+                          <option value="CDF">CDF (Congolese Franc)</option>
+                          <option value="CHF">CHF (Swiss Franc)</option>
+                          <option value="CLP">CLP (Chilean Peso)</option>
+                          <option value="CNY">CNY (Chinese Yuan)</option>
+                          <option value="COP">COP (Colombian Peso)</option>
+                          <option value="CRC">CRC (Costa Rican Colón)</option>
+                          <option value="CUP">CUP (Cuban Peso)</option>
+                          <option value="CVE">CVE (Cape Verdean Escudo)</option>
+                          <option value="CZK">CZK (Czech Koruna)</option>
+                          <option value="DJF">DJF (Djiboutian Franc)</option>
+                          <option value="DKK">DKK (Danish Krone)</option>
+                          <option value="DOP">DOP (Dominican Peso)</option>
+                          <option value="DZD">DZD (Algerian Dinar)</option>
+                          <option value="EGP">EGP (Egyptian Pound)</option>
+                          <option value="ERN">ERN (Eritrean nakfa)</option>
+                          <option value="ETB">ETB (Ethiopian Birr)</option>
+                          <option value="FJD">FJD (Fijian Dollar)</option>
+                          <option value="FKP">FKP (Falkland Islands pound)</option>
+                          <option value="FOK">FOK (Faroese króna)</option>
+                          <option value="GEL">GEL (Georgian Lari)</option>
+                          <option value="GGP">GGP (Guernsey pound)</option>
+                          <option value="GHS">GHS (Ghanaian Cedi)</option>
+                          <option value="GIP">GIP (Gibraltar pound)</option>
+                          <option value="GMD">GMD (Gambian dalasi)</option>
+                          <option value="GNF">GNF (Guinean Franc)</option>
+                          <option value="GTQ">GTQ (Guatemalan Quetzal)</option>
+                          <option value="GYD">GYD (Guyanaese Dollar)</option>
+                          <option value="HKD">HKD (Hong Kong Dollar)</option>
+                          <option value="HNL">HNL (Honduran Lempira)</option>
+                          <option value="HRK">HRK (Croatian Kuna)</option>
+                          <option value="HTG">HTG (Haitian Gourde)</option>
+                          <option value="HUF">HUF (Hungarian Forint)</option>
+                          <option value="IDR">IDR (Indonesian Rupiah)</option>
+                          <option value="ILS">ILS (Israeli New Shekel)</option>
+                          <option value="IMP">IMP (Manx pound)</option>
+                          <option value="INR">INR (Indian Rupee)</option>
+                          <option value="IQD">IQD (Iraqi Dinar)</option>
+                          <option value="IRR">IRR (Iranian Rial)</option>
+                          <option value="ISK">ISK (Icelandic Króna)</option>
+                          <option value="JEP">JEP (Jersey pound)</option>
+                          <option value="JMD">JMD (Jamaican Dollar)</option>
+                          <option value="JOD">JOD (Jordanian Dinar)</option>
+                          <option value="JPY">JPY (Japanese Yen)</option>
+                          <option value="KES">KES (Kenyan Shilling)</option>
+                          <option value="KGS">KGS (Kyrgystani Som)</option>
+                          <option value="KHR">KHR (Cambodian riel)</option>
+                          <option value="KID">KID (Kiribati Dollar)</option>
+                          <option value="KMF">KMF (Comorian franc)</option>
+                          <option value="KRW">KRW (South Korean won)</option>
+                          <option value="KWD">KWD (Kuwaiti Dinar)</option>
+                          <option value="KYD">KYD (Cayman Islands Dollar)</option>
+                          <option value="KZT">KZT (Kazakhstani Tenge)</option>
+                          <option value="LAK">LAK (Laotian Kip)</option>
+                          <option value="LBP">LBP (Lebanese pound)</option>
+                          <option value="LKR">LKR (Sri Lankan Rupee)</option>
+                          <option value="LRD">LRD (Liberian Dollar)</option>
+                          <option value="LSL">LSL (Lesotho loti)</option>
+                          <option value="LYD">LYD (Libyan Dinar)</option>
+                          <option value="MAD">MAD (Moroccan Dirham)</option>
+                          <option value="MDL">MDL (Moldovan Leu)</option>
+                          <option value="MGA">MGA (Malagasy Ariary)</option>
+                          <option value="MKD">MKD (Macedonian Denar)</option>
+                          <option value="MMK">MMK (Myanmar Kyat)</option>
+                          <option value="MNT">MNT (Mongolian tögrög)</option>
+                          <option value="MOP">MOP (Macanese Pataca)</option>
+                          <option value="MRU">MRU (Mauritanian Ouguiya)</option>
+                          <option value="MUR">MUR (Mauritian Rupee)</option>
+                          <option value="MVR">MVR (Maldivian Rufiyaa)</option>
+                          <option value="MWK">MWK (Malawian Kwacha)</option>
+                          <option value="MXN">MXN (Mexican Peso)</option>
+                          <option value="MYR">MYR (Malaysian Ringgit)</option>
+                          <option value="MZN">MZN (Mozambican metical)</option>
+                          <option value="NAD">NAD (Namibian dollar)</option>
+                          <option value="NGN">NGN (Nigerian Naira)</option>
+                          <option value="NIO">NIO (Nicaraguan Córdoba)</option>
+                          <option value="NOK">NOK (Norwegian Krone)</option>
+                          <option value="NPR">NPR (Nepalese Rupee)</option>
+                          <option value="NZD">NZD (New Zealand Dollar)</option>
+                          <option value="OMR">OMR (Omani Rial)</option>
+                          <option value="PAB">PAB (Panamanian Balboa)</option>
+                          <option value="PEN">PEN (Sol)</option>
+                          <option value="PGK">PGK (Papua New Guinean Kina)</option>
+                          <option value="PHP">PHP (Philippine peso)</option>
+                          <option value="PKR">PKR (Pakistani Rupee)</option>
+                          <option value="PLN">PLN (Poland złoty)</option>
+                          <option value="PYG">PYG (Paraguayan Guarani)</option>
+                          <option value="QAR">QAR (Qatari Rial)</option>
+                          <option value="RON">RON (Romanian Leu)</option>
+                          <option value="RSD">RSD (Serbian Dinar)</option>
+                          <option value="RUB">RUB (Russian Ruble)</option>
+                          <option value="RWF">RWF (Rwandan franc)</option>
+                          <option value="SAR">SAR (Saudi Riyal)</option>
+                          <option value="SBD">SBD (Solomon Islands Dollar)</option>
+                          <option value="SCR">SCR (Seychellois Rupee)</option>
+                          <option value="SDG">SDG (Sudanese pound)</option>
+                          <option value="SEK">SEK (Swedish Krona)</option>
+                          <option value="SGD">SGD (Singapore Dollar)</option>
+                          <option value="SHP">SHP (Saint Helena pound)</option>
+                          <option value="SLL">SLL (Sierra Leonean Leone)</option>
+                          <option value="SOS">SOS (Somali Shilling)</option>
+                          <option value="SRD">SRD (Surinamese Dollar)</option>
+                          <option value="SSP">SSP (South Sudanese pound)</option>
+                          <option value="STN">STN (São Tomé and Príncipe dobra)</option>
+                          <option value="SYP">SYP (Syrian pound)</option>
+                          <option value="SZL">SZL (Swazi Lilangeni)</option>
+                          <option value="THB">THB (Thai Bah)</option>
+                          <option value="TJS">TJS (Tajikistani Somoni)</option>
+                          <option value="TMT">TMT (Turkmenistani manat)</option>
+                          <option value="TND">TND (Tunisian Dinar)</option>
+                          <option value="TOP">TOP (Tongan Paʻanga)</option>
+                          <option value="TRY">TRY (Turkish lira)</option>
+                          <option value="TTD">TTD (Trinidad & Tobago Dollar)</option>
+                          <option value="TVD">TVD (Tuvaluan dollar)</option>
+                          <option value="TWD">TWD (New Taiwan dollar)</option>
+                          <option value="TZS">TZS (Tanzanian Shilling)</option>
+                          <option value="UAH">UAH (Ukrainian hryvnia)</option>
+                          <option value="UGX">UGX (Ugandan Shilling)</option>
+                          <option value="UYU">UYU (Uruguayan Peso)</option>
+                          <option value="UZS">UZS (Uzbekistani Som)</option>
+                          <option value="VES">VES (Venezuelan bolívar)</option>
+                          <option value="VND">VND (Vietnamese dong)</option>
+                          <option value="VUV">VUV (Vanuatu vatu)</option>
+                          <option value="WST">WST (Samoan tālā)</option>
+                          <option value="XAF">XAF (Central African CFA franc)</option>
+                          <option value="XCD">XCD (East Caribbean Dollar)</option>
+                          <option value="XOF">XOF (West African franc)</option>
+                          <option value="XPF">XPF (CFP Franc)</option>
+                          <option value="YER">YER (Yemeni Rial)</option>
+                          <option value="ZAR">ZAR (South African Rand)</option>
+                          <option value="ZMW">ZMW (Zambian Kwacha)</option>
+                          <option value="ZWL">ZWL (Zimbabwean dollar)</option>
+                        </select>
+                  </div>
+                  <div id="form-buttons">
+                  <span>
+                    <input class="convert buttons btn btn-primary" type="button" value="Convert"></input>
+                    <input class="btn btn-primary" id="button-reset" class="buttons" type="reset" value="Reset">
+                  </span>
+                  <div id="final-amount">
+                    <h2 id="h2-converted"><span id="converted-currency">Converted Currency:</span></h2>
+                    <div id="final-value"></div>
+                  </div>
+                  </div>
+              </div>
+            </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+
+  <!--Weather data -->
+  <div  data-bs-target="#weather-pop-up">
+  <div class="modal fade" id="weather-pop-up" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"></h5>
+            <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </button>
+          </div>
+          <div id="weather-background" class="modal-body">
+            <div class="whole-weather-container">
+            <div class="weather-container">
+              <div class="container" id="temp-container">
+                <p id="temp-text"></p>
+                <div id="location-text"></div>
+              </div>
+              <div class="container" id="wicon-container">
+                <div class="container">
+                  <span><img id="weather-icon-image" src=""></span>
+                  <span class="weather-text other-text" id="sky-conditions-title"></span>
+                </div>
+              </div>
+              <div id="other">
+                <span class="weather-text"><i class="fas fa-tint"></i><span id="humidity-title" class="other-text"></span></span>
+                <span class="weather-text"><i class="fas fa-wind"></i><span id="wind-title" class="other-text"></span></span>
+              </div>
+            </div>
+            <div id="forecast">
+              <div class="day-forecast container">
+                <div class="day-text" id="day1"></div>
+                <span><img class="forecast-icon" id="icon0"></span>
+                <div class="forecast-temp" id="temp0"></div>
+              </div>
+              <div class="day-forecast container">
+                <div class="day-text" id="day2"></div>
+                <span><img class="forecast-icon" id="icon1"></span>
+                <div class="forecast-temp" id="temp1"></div>
+              </div>
+              <div class="day-forecast container">
+                <div class="day-text" id="day3"></div>
+                <span><img class="forecast-icon" id="icon2"></span>
+                <div class="forecast-temp" id="temp2"></div>
+              </div>
+              <div class="day-forecast container">
+                <div class="day-text" id="day4"></div>
+                <span><img class="forecast-icon" id="icon3"></span>
+                <div class="forecast-temp" id="temp3"></div>
+              </div>
+              <div class="day-forecast container">
+                <div class="day-text" id="day5"></div>
+                <span><img class="forecast-icon" id="icon4"></span>
+                <div class="forecast-temp" id="temp4"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+          <div id="weather-footer" class="modal-footer">
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+
+  <!--News data -->
+  <div  data-bs-target="#news-pop-up">
+  <div class="modal fade" id="news-pop-up" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content table-content">
+        <div class="modal-header">
+          <h5 class="modal-title"></h5>
+          <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </button>
+        </div>
+        <div class="headline-title-container">
+        <h5 class="modal-title headline-title">News Headlines</h5>
+        </div>
+        <div class="modal-body table-div">
+          <div class="row">
+            <div>
+              <table  class="table">
+                <tbody id="news-table">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+      </div>
+  </div>
+  </div>
+
+  <!--Images data -->
+  <div  data-bs-target="#images-pop-up">
+  <div class="modal fade" id="images-pop-up" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog"  id="center" role="document">
+        <div class="modal-content" id="images-whole-container">
+          <div class="modal-header">
+            <h5 class="modal-title"></h5>
+            <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </button>
+          </div>
+          <div class="modal-body" id="images-body">
+              <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                <div id="carousel" class="carousel-inner">
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+
+  <!--Covid data -->
+  <div  data-bs-target="#covid-pop-up">
+  <div class="modal fade" id="covid-pop-up" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </button>
+          </div>
+          <div class="headline-title-container" id="covid-headline">
+          <h5 class="modal-title headline-title">Covid Statistics</h5>
+          <div class="sub-header"><i class="fas fa-user-friends"></i><p id="population">Population</p></div>
+          </div>
+          <div id="covid-table-div" class="modal-body">
+            <table  class="table">
+              <tbody id="">
+                <tr class="table-row">
+                  <th><i class="fas fa-plus"></i></th>
+                  <td>Confirmed Cases</td>
+                  <td id="covid-confirmed"></td>
+                </tr>
+                <tr class="table-row">
+                  <th><i class="fas fa-procedures"></i></th>
+                  <td>Critical Cases</td>
+                  <td id="covid-critical"></td>
+                </tr>
+                <tr class="table-row">
+                  <th><i class="fas fa-feather-alt"></i></th>
+                  <td>Total Deaths</td>
+                  <td id="covid-deaths"></td>
+                </tr>
+                <tr class="table-row">
+                  <th><i class="fas fa-virus-slash"></i></th>
+                  <td>Recovered</td>
+                  <td id="covid-recovered"></td>
+                </tr>
+                <tr class="table-row">
+                  <th><i class="fas fa-chart-bar"></i></th>
+                  <td>Cases Per Million</td>
+                  <td id="covid-cpm"></td>
+                </tr>
+                <tr class="table-row">
+                  <th><i class="fas fa-user-md"></i></th>
+                  <td>Death Rate</td>
+                  <td id="covid-death-rate"></td>
+                </tr>
+                <tr class="table-row">
+                  <th><i class="fas fa-heartbeat"></i></th>
+                  <td>Recovery Rate</td>
+                  <td id="covid-recovery-rate"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+
+  <!--National Holidays data -->
+  <div  data-bs-target="#national-holidays-pop-up">
+  <div class="modal fade" id="national-holidays-pop-up" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content table-content">
+          <div class="modal-header">
+            <h5 class="modal-title"></h5>
+            <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </button>
+          </div>
+          <div class="headline-title-container">
+          <h5 class="modal-title headline-title">National Holidays</h5>
+          </div>
+          <div class="modal-body table-div">
+            <div class="row">
+              <div>
+                <table  class="table">
+                  <tbody id="national-holiday-table">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+          </div>
+        </div>
+      </div>
+  </div>
+  </div>
+
+  <!--Wikipedia data -->
+  <div  data-bs-target="#wikipedia-pop-up">
+  <div class="modal fade" id="wikipedia-pop-up" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content table-content">
+        <div class="modal-header">
+          <h5 class="modal-title"></h5>
+          <button type="button" class="btn-close close-button" data-bs-dismiss="modal" aria-label="Close"></button>
+          </button>
+        </div>
+        <div class="headline-title-container">
+        <h5 class="modal-title headline-title">Wikipedia</h5>
+        </div>
+        <div class="modal-body table-div">
+          <div class="row">
+            <div>
+              <table  class="table">
+                <tbody id="wikipedia-table">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+      </div>
+  </div>
+  </div>
+
+
+    <div class="map-container" id="map">
+      <div id="hide">
+      <div id="error-box">
+        <div id='error-container'>
+          <h3 class="error-text">Something went wrong...</h3>
+        </div>
+      </div>
+      </div>
+      <div id="loader-box">
+        <div id='loader-container'>
+          <img id="loader-gif" src='world1.gif' height='100px'>
+        </div>
+      </div>
+      <div id="country-select-container">
+        <div class="input-group mb-3">
+          <select name="country-drop-down" class="form-select" id="country-dd">
+
+          </select>
+        </div>
+      </div>
+    </div>
+
+
+  <script type="application/javascript" src="libs/js/jquery-2.2.3.min.js"></script>
+  <script src="libs/js/leaflet.extra-markers.min.js"></script>
+  <script type="application/javascript" src="libs/js/script.js"></script>
+  <script type="text/javascript" src="libs/js/bootstrap.bundle.js"></script>
+
+
+  </body>
+
+</html>
