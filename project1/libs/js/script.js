@@ -497,7 +497,7 @@ function getAll(countryCode){
 
               var nationHolidayDate = document.createElement("th");
 
-              nationHolidayDate.innerHTML = 'No data available';
+              nationHolidayDate.innerHTML = 'No data available at this time';
               option.append(nationHolidayDate);
 
             }
